@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "569221476719",
+    "firebase_url": "https://fir-auth-3f6c3.firebaseio.com",
+    "project_id": "fir-auth-3f6c3",
+    "storage_bucket": "fir-auth-3f6c3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569221476719:android:a3412210113f863b",
+        "android_client_info": {
+          "package_name": "ru.horse315.firebaseauth"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "569221476719-prb2ll0p2vpn1j8u56c6vijrtddahbju.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ru.horse315.firebaseauth",
+            "certificate_hash": "7c685fa9592c959a955baf0217e2e96fd2c9075d"
+          }
+        },
+        {
+          "client_id": "569221476719-jdon8o93b0ilp7qjice63ft0n9pdft3i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ru.horse315.firebaseauth",
+            "certificate_hash": "3196c8ada06fb5bec98fac50a2487b74a6ba9aae"
+          }
+        },
+        {
+          "client_id": "569221476719-jejl5cngn752cl9vfp3jbi1fpkiip7bc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAo__NSdBPhBL-3PqE7GX5qlxKK55MFUvY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "569221476719-jejl5cngn752cl9vfp3jbi1fpkiip7bc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
