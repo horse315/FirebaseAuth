@@ -1,21 +1,23 @@
 package ru.horse315.firebaseauth
 
+import android.graphics.Color
 import android.os.Bundle
-import android.support.v4.widget.TextViewCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatButton
 import android.support.v7.widget.AppCompatEditText
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseException
+import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
 import java.util.concurrent.TimeUnit
-import com.google.firebase.FirebaseTooManyRequestsException
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -23,10 +25,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var phone: AppCompatEditText
     lateinit var btn: AppCompatButton
     lateinit var logs: LinearLayout
-
-    init{
-        FirebaseApp.initializeApp(application)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +34,10 @@ class MainActivity : AppCompatActivity() {
         btn = findViewById(R.id.log_me_in) as AppCompatButton
         logs = findViewById(R.id.logs) as LinearLayout
 
+        FirebaseApp.initializeApp(this)
+
         btn.setOnClickListener {
+            btn.isEnabled = false
             PhoneAuthProvider.getInstance().verifyPhoneNumber(
                     phone.text.toString(),
                     60,
@@ -48,6 +49,8 @@ class MainActivity : AppCompatActivity() {
 
     val authCallback = object : OnVerificationStateChangedCallbacks() {
         override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+            btn.isEnabled = true
+
             // This callback will be invoked in two situations:
             // 1 - Instant verification. In some cases the phone number can be instantly
             //     verified without needing to send or enter a verification code.
@@ -55,10 +58,11 @@ class MainActivity : AppCompatActivity() {
             //     detect the incoming verification SMS and perform verificaiton without
             //     user action.
             log("onVerificationCompleted", credential.toString())
-
         }
 
         override fun onVerificationFailed(e: FirebaseException) {
+            btn.isEnabled = true
+
             // This callback is invoked in an invalid request for verification is made,
             // for instance if the the phone number format is not valid.
 
@@ -74,6 +78,7 @@ class MainActivity : AppCompatActivity() {
             // ...
 
             log("onVerificationFailed", e.toString())
+
         }
 
         override fun onCodeSent(verificationId: String,
@@ -83,11 +88,9 @@ class MainActivity : AppCompatActivity() {
             // by combining the code with a verification ID.
 
             // Save verification ID and resending token so we can use them later
-            val mVerificationId = verificationId
-            val mResendToken = token
-
-            // ...
             log("onCodeSent", "verificationId: ${verificationId}\ntoken: ${token}")
+
+            // open enter code dialog
         }
 
         override fun onCodeAutoRetrievalTimeOut(msg: String?) {
@@ -97,7 +100,12 @@ class MainActivity : AppCompatActivity() {
 
     fun log(caption: String, message: String){
         val v = TextView(this)
-        v.text = "${caption}: $message"
+
+        val text = SpannableString("$caption: $message")
+
+        text.setSpan(ForegroundColorSpan(Color.BLUE), 0, caption.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        v.text = text
         v.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         logs.addView(v)
     }

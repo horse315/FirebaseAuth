@@ -11,7 +11,7 @@ android {
         }
     }
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "ru.horse315.firebaseauth"
         minSdkVersion 21
@@ -42,3 +42,5 @@ dependencies {
 repositories {
     mavenCentral()
 }
+
+apply plugin: 'com.google.gms.google-services'
