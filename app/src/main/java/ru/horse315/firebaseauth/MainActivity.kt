@@ -21,18 +21,18 @@ import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity() {
+    companion object{
+        val RESEND_TIMEOUT = 60L
+        val CODE_CHECK_RESULT = 1
+    }
 
-    lateinit var phone: AppCompatEditText
-    lateinit var btn: AppCompatButton
-    lateinit var logs: LinearLayout
+    val phone: AppCompatEditText by lazy(LazyThreadSafetyMode.NONE) { findViewById(R.id.phone_number) as AppCompatEditText }
+    val btn: AppCompatButton by lazy(LazyThreadSafetyMode.NONE) { findViewById(R.id.log_me_in) as AppCompatButton }
+    val logs: LinearLayout by lazy(LazyThreadSafetyMode.NONE) { findViewById(R.id.logs) as LinearLayout }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        phone = findViewById(R.id.phone_number) as AppCompatEditText
-        btn = findViewById(R.id.log_me_in) as AppCompatButton
-        logs = findViewById(R.id.logs) as LinearLayout
 
         FirebaseApp.initializeApp(this)
 
@@ -40,10 +40,16 @@ class MainActivity : AppCompatActivity() {
             btn.isEnabled = false
             PhoneAuthProvider.getInstance().verifyPhoneNumber(
                     phone.text.toString(),
-                    60,
+                    RESEND_TIMEOUT,
                     TimeUnit.SECONDS,
                     this,
                     authCallback);
+        }
+
+        // open enter code dialog
+        supportFragmentManager.findFragmentByTag("CODE_INPUT_DIALOG") ?: let {
+            val dialog = CodeInputDialog.createInstance(CODE_CHECK_RESULT, RESEND_TIMEOUT)
+            dialog.show(supportFragmentManager, "CODE_INPUT_DIALOG")
         }
     }
 
@@ -57,7 +63,11 @@ class MainActivity : AppCompatActivity() {
             // 2 - Auto-retrieval. On some devices Google Play services can automatically
             //     detect the incoming verification SMS and perform verificaiton without
             //     user action.
-            log("onVerificationCompleted", credential.toString())
+            log("onVerificationCompleted", "provider: ${credential.provider}; sms code: ${credential.smsCode}")
+
+            supportFragmentManager.findFragmentByTag("CODE_INPUT_DIALOG")?.let{
+                (it as CodeInputDialog).setCode(credential.smsCode!!)
+            }
         }
 
         override fun onVerificationFailed(e: FirebaseException) {
@@ -91,6 +101,10 @@ class MainActivity : AppCompatActivity() {
             log("onCodeSent", "verificationId: ${verificationId}\ntoken: ${token}")
 
             // open enter code dialog
+            supportFragmentManager.findFragmentByTag("CODE_INPUT_DIALOG") ?: let {
+                val dialog = CodeInputDialog.createInstance(CODE_CHECK_RESULT, RESEND_TIMEOUT)
+                dialog.show(supportFragmentManager, "CODE_INPUT_DIALOG")
+            }
         }
 
         override fun onCodeAutoRetrievalTimeOut(msg: String?) {
